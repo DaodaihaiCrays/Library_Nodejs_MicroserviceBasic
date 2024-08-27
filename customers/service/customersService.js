@@ -1,8 +1,8 @@
 const  Customers = require("../model/Customers")
 
-const CreateCustomersService = async ( Customers) => {
+const CreateCustomersService = async (customers) => {
     try {
-        const result = await  Customers.create( Customers) 
+        const result = await  Customers.create(customers) 
         return result 
     } catch (error) {
         console.error('Error creating  Customers:', error) 

@@ -1,4 +1,5 @@
 const Orders = require("../model/Orders")
+const axios = require("axios")
 
 const CreateOrdersService = async (orders) => {
     try {
@@ -27,7 +28,16 @@ const GetOrdersByIdService = async(id) => {
         if (!result) {
             throw new Error('Customer not found') 
         }
-        return result 
+        
+        const resCustomer = await axios.get("http://localhost:3001/customers/" + result['CustomerId'].toString());
+        let nameCustomer = resCustomer.data['data']['name']
+        
+        const resBook = await axios.get("http://localhost:3000/book/" + result['BookId'].toString());
+        let nameBook = resBook.data['data']['title']
+        
+        if(!nameCustomer || !nameBook)
+            return null
+        return {nameCustomer, nameBook} 
     } catch (error) {
         console.error(`Error fetching Order with ID ${id}:`, error) 
         return null  

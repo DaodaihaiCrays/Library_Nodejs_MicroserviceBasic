@@ -6,7 +6,6 @@ const {
 } = require("../service/ordersService")
 
 const CreateOrdersController = async(req, res) => {
-    console.log(req.body)
     const result = await CreateOrdersService(req.body)
     
     if(result!=null)
@@ -33,7 +32,7 @@ const GetAllOrdersController = async(req, res) => {
     else 
         return res.status(400).json({
             error: 1,
-            msg: "Don't get all Customers"
+            msg: "Don't get all orders"
         })    
 }
 
@@ -49,7 +48,7 @@ const GetOrdersByIdController = async(req, res) => {
     else 
         return res.status(400).json({
             error: 1,
-            msg: "Don't get all Customers"
+            msg: "Don't get order by id"
         })    
 }
 
