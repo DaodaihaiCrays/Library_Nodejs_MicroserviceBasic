@@ -1,5 +1,8 @@
 const Orders = require("../model/Orders")
 const axios = require("axios")
+const {
+    GetInformationBookandCustomer
+} = require("../config/axios")
 
 const CreateOrdersService = async (orders) => {
     try {
@@ -18,10 +21,11 @@ const GetAllOrdersService = async(data) => {
         console.log(result);
 
         for (let i = 0; i < result.length; i++) {
-            const resCustomer = await axios.get("http://localhost:3001/customers/" + result[i]['CustomerId'].toString());
-            const resBook = await axios.get("http://localhost:3000/book/" + result[i]['BookId'].toString());
+            // const resCustomer = await axios.get("http://localhost:3001/customers/" + result[i]['CustomerId'].toString());
+            // const resBook = await axios.get("http://localhost:3000/book/" + result[i]['BookId'].toString());
            
-           
+            const {resCustomer, resBook} = await GetInformationBookandCustomer(result[i]['BookId'].toString(),result[i]['CustomerId'].toString())
+          
             const customerData = resCustomer.data['data'];
             const bookData = resBook.data['data'];
             
@@ -49,10 +53,9 @@ const GetOrdersByIdService = async(id) => {
             throw new Error('Customer not found') 
         }
         
-        const resCustomer = await axios.get("http://localhost:3001/customers/" + result['CustomerId'].toString());
+        const {resCustomer, resBook} = await GetInformationBookandCustomer(result['BookId'].toString(), result['CustomerId'].toString())
+
         let nameCustomer = resCustomer.data['data']['name']
-        
-        const resBook = await axios.get("http://localhost:3000/book/" + result['BookId'].toString());
         let nameBook = resBook.data['data']['title']
         
         if(!nameCustomer || !nameBook)
