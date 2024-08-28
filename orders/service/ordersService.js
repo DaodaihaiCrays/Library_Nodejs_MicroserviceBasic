@@ -4,9 +4,11 @@ const {
     GetInformationBookandCustomer
 } = require("../config/axios")
 
+const { GetCustomerID } = require("../client/customders")
+const { GetBookID } = require("../client/books")
+
 const CreateOrdersService = async (orders) => {
     try {
-        console.log(orders)
         const result = await Orders.create(orders) 
         return result 
     } catch (error) {
@@ -18,24 +20,19 @@ const CreateOrdersService = async (orders) => {
 const GetAllOrdersService = async(data) => {
     try {
         const result = await Orders.find();
-        console.log(result);
 
         for (let i = 0; i < result.length; i++) {
-            // const resCustomer = await axios.get("http://localhost:3001/customers/" + result[i]['CustomerId'].toString());
-            // const resBook = await axios.get("http://localhost:3000/book/" + result[i]['BookId'].toString());
+
+            const customer = await GetCustomerID(result[i]['CustomerId'].toString())
+            const book = await GetBookID(result[i]['BookId'].toString()) 
            
-            const {resCustomer, resBook} = await GetInformationBookandCustomer(result[i]['BookId'].toString(),result[i]['CustomerId'].toString())
-          
-            const customerData = resCustomer.data['data'];
-            const bookData = resBook.data['data'];
-            
-            if(!customerData || !bookData)
+            if(!customer || !book)
                 return null
 
             result[i] = {
                 ...result[i]._doc, // để xử lý kq trả về không chứa các field dư của Mongoose
-                CustomerId: customerData,
-                BookId: bookData,
+                CustomerId: customer,
+                BookId: book,
             };
         }
 
@@ -49,14 +46,16 @@ const GetAllOrdersService = async(data) => {
 const GetOrdersByIdService = async(id) => {
     try {
         const result = await Orders.findById(id) 
+   
         if (!result) {
             throw new Error('Customer not found') 
         }
         
-        const {resCustomer, resBook} = await GetInformationBookandCustomer(result['BookId'].toString(), result['CustomerId'].toString())
+        const customer = await GetCustomerID(result['CustomerId'].toString())
+        const book = await GetBookID(result['BookId'].toString()) 
 
-        let nameCustomer = resCustomer.data['data']['name']
-        let nameBook = resBook.data['data']['title']
+        const nameCustomer = customer['name']
+        const nameBook = book['title']
         
         if(!nameCustomer || !nameBook)
             return null
